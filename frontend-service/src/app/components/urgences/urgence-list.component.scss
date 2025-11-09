@@ -1,0 +1,85 @@
+.priority-critical {
+  border-left: 4px solid #dc3545;
+  background-color: rgba(220, 53, 69, 0.05);
+}
+
+.priority-high {
+  border-left: 4px solid #fd7e14;
+  background-color: rgba(253, 126, 20, 0.05);
+}
+
+.priority-medium {
+  border-left: 4px solid #ffc107;
+  background-color: rgba(255, 193, 7, 0.05);
+}
+
+.priority-low {
+  border-left: 4px solid #28a745;
+  background-color: rgba(40, 167, 69, 0.05);
+}
+
+.table th {
+  border-top: none;
+  font-weight: 600;
+  color: #495057;
+  font-size: 0.875rem;
+}
+
+.table td {
+  vertical-align: middle;
+  font-size: 0.875rem;
+}
+
+.btn-group-sm .btn {
+  padding: 0.25rem 0.5rem;
+}
+
+.modal {
+  background: rgba(0, 0, 0, 0.5);
+}
+
+.card {
+  border: none;
+  box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.075);
+}
+
+.card-header {
+  background: #f8f9fa;
+  border-bottom: 1px solid #dee2e6;
+}
+
+.badge {
+  font-size: 0.75rem;
+}
+
+.form-label {
+  font-weight: 500;
+  color: #495057;
+  margin-bottom: 0.5rem;
+}
+
+.alert {
+  border: none;
+  border-radius: 0.5rem;
+}
+
+.spinner-border-sm {
+  width: 1rem;
+  height: 1rem;
+}
+
+.text-muted {
+  color: #6c757d !important;
+}
+
+.fw-bold {
+  font-weight: 600 !important;
+}
+
+.container-fluid {
+  max-width: 1400px;
+}
+
+.bg-dark {
+  background-color: #343a40 !important;
+}
