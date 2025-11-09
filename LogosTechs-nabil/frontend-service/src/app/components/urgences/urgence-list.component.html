@@ -1,0 +1,295 @@
+<div class="container-fluid py-4">
+  <!-- Header -->
+  <div class="row mb-4">
+    <div class="col">
+      <h2 class="mb-0">
+        <i class="fas fa-ambulance me-2"></i>
+        Gestion des Urgences
+      </h2>
+      <p class="text-muted">Gérez les urgences et le triage des patients</p>
+    </div>
+    <div class="col-auto">
+      <button class="btn btn-danger" (click)="openCreateModal()">
+        <i class="fas fa-plus me-2"></i>
+        Nouvelle Urgence
+      </button>
+    </div>
+  </div>
+
+  <!-- Error Alert -->
+  <div class="alert alert-danger alert-dismissible" *ngIf="error">
+    <i class="fas fa-exclamation-triangle me-2"></i>
+    {{ error }}
+    <button type="button" class="btn-close" (click)="clearError()"></button>
+  </div>
+
+  <!-- Filters -->
+  <div class="card mb-4">
+    <div class="card-body">
+      <div class="row g-3">
+        <div class="col-md-3">
+          <label class="form-label">Statut</label>
+          <select class="form-select" [(ngModel)]="selectedStatus" (change)="onStatusFilterChange()">
+            <option value="ALL">Tous les statuts</option>
+            <option *ngFor="let status of statuses" [value]="status">
+              {{ getStatusLabel(status) }}
+            </option>
+          </select>
+        </div>
+        <div class="col-md-3">
+          <label class="form-label">Priorité</label>
+          <select class="form-select" [(ngModel)]="selectedPriority" (change)="onPriorityFilterChange()">
+            <option value="ALL">Toutes les priorités</option>
+            <option *ngFor="let priority of priorities" [value]="priority">
+              {{ getPriorityLabel(priority) }}
+            </option>
+          </select>
+        </div>
+        <div class="col-md-4">
+          <label class="form-label">Recherche</label>
+          <input 
+            type="text" 
+            class="form-control" 
+            placeholder="Patient, symptômes, description..."
+            [(ngModel)]="searchTerm"
+            (input)="onSearchChange()">
+        </div>
+        <div class="col-md-2">
+          <label class="form-label d-block">&nbsp;</label>
+          <button class="btn btn-outline-secondary w-100" (click)="loadUrgences()">
+            <i class="fas fa-sync-alt me-2"></i>
+            Actualiser
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Loading -->
+  <div class="text-center py-5" *ngIf="loading">
+    <div class="spinner-border text-danger" role="status">
+      <span class="visually-hidden">Chargement...</span>
+    </div>
+    <p class="mt-2 text-muted">Chargement des urgences...</p>
+  </div>
+
+  <!-- Urgences Table -->
+  <div class="card" *ngIf="!loading">
+    <div class="card-header">
+      <h5 class="mb-0">
+        <i class="fas fa-list me-2"></i>
+        Liste des Urgences
+        <span class="badge bg-secondary ms-2">{{ filteredUrgences.length }}</span>
+      </h5>
+    </div>
+    <div class="card-body p-0">
+      <div class="table-responsive">
+        <table class="table table-hover mb-0">
+          <thead class="table-light">
+            <tr>
+              <th>Patient</th>
+              <th>Priorité</th>
+              <th>Statut</th>
+              <th>Médecin</th>
+              <th>Salle</th>
+              <th>Arrivée</th>
+              <th class="text-center">Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let urgence of filteredUrgences" [class]="'priority-' + urgence.priority.toLowerCase()">
+              <td>
+                <div>
+                  <div class="fw-bold">{{ urgence.patientName }}</div>
+                  <small class="text-muted">{{ urgence.patientAge }} ans</small>
+                  <div class="mt-1">
+                    <small class="text-muted">{{ urgence.symptoms }}</small>
+                  </div>
+                </div>
+              </td>
+              <td>
+                <span class="badge bg-{{ getPriorityColor(urgence.priority) }}">
+                  {{ getPriorityLabel(urgence.priority) }}
+                </span>
+              </td>
+              <td>
+                <span class="badge bg-{{ getStatusColor(urgence.status) }}">
+                  {{ getStatusLabel(urgence.status) }}
+                </span>
+              </td>
+              <td>{{ getDoctorName(urgence.assignedDoctorId || 0) }}</td>
+              <td>{{ urgence.roomNumber || '-' }}</td>
+              <td>{{ urgence.arrivalTime | date:'dd/MM HH:mm' }}</td>
+              <td class="text-center">
+                <div class="btn-group btn-group-sm">
+                  <button 
+                    *ngIf="urgence.status === UrgenceStatus.WAITING"
+                    class="btn btn-outline-info" 
+                    (click)="openTriageModal(urgence)"
+                    title="Triage">
+                    <i class="fas fa-stethoscope"></i>
+                  </button>
+                  <button 
+                    *ngIf="urgence.status === UrgenceStatus.TRIAGED"
+                    class="btn btn-outline-primary" 
+                    (click)="openTreatmentModal(urgence)"
+                    title="Commencer traitement">
+                    <i class="fas fa-play"></i>
+                  </button>
+                  <button 
+                    *ngIf="urgence.status === UrgenceStatus.IN_TREATMENT"
+                    class="btn btn-outline-success" 
+                    (click)="dischargePatient(urgence)"
+                    title="Sortie">
+                    <i class="fas fa-check"></i>
+                  </button>
+                  <button 
+                    class="btn btn-outline-danger" 
+                    (click)="deleteUrgence(urgence)"
+                    title="Supprimer">
+                    <i class="fas fa-trash"></i>
+                  </button>
+                </div>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <!-- Empty State -->
+  <div class="text-center py-5" *ngIf="!loading && filteredUrgences.length === 0">
+    <i class="fas fa-ambulance fa-3x text-muted mb-3"></i>
+    <h5 class="text-muted">Aucune urgence trouvée</h5>
+    <p class="text-muted">Essayez de modifier vos critères de recherche ou créez une nouvelle urgence.</p>
+  </div>
+</div>
+
+<!-- Create Urgence Modal -->
+<div class="modal fade" [class.show]="showCreateModal" [style.display]="showCreateModal ? 'block' : 'none'" *ngIf="showCreateModal">
+  <div class="modal-dialog modal-lg">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">
+          <i class="fas fa-ambulance me-2"></i>
+          Nouvelle Urgence
+        </h5>
+        <button type="button" class="btn-close" (click)="closeCreateModal()"></button>
+      </div>
+      <div class="modal-body">
+        <form>
+          <div class="row g-3">
+            <div class="col-md-6">
+              <label class="form-label">Nom du patient *</label>
+              <input type="text" class="form-control" [(ngModel)]="newUrgence.patientName" name="patientName" required>
+            </div>
+            <div class="col-md-6">
+              <label class="form-label">Âge *</label>
+              <input type="text" class="form-control" [(ngModel)]="newUrgence.patientAge" name="patientAge" required>
+            </div>
+            <div class="col-12">
+              <label class="form-label">Symptômes *</label>
+              <input type="text" class="form-control" [(ngModel)]="newUrgence.symptoms" name="symptoms" required>
+            </div>
+            <div class="col-12">
+              <label class="form-label">Description *</label>
+              <textarea class="form-control" rows="3" [(ngModel)]="newUrgence.description" name="description" required></textarea>
+            </div>
+            <div class="col-md-6">
+              <label class="form-label">Priorité initiale *</label>
+              <select class="form-select" [(ngModel)]="newUrgence.priority" name="priority" required>
+                <option *ngFor="let priority of priorities" [value]="priority">
+                  {{ getPriorityLabel(priority) }}
+                </option>
+              </select>
+            </div>
+          </div>
+        </form>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" (click)="closeCreateModal()">Annuler</button>
+        <button type="button" class="btn btn-danger" (click)="createUrgence()" [disabled]="loading">
+          <span class="spinner-border spinner-border-sm me-2" *ngIf="loading"></span>
+          Créer
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Triage Modal -->
+<div class="modal fade" [class.show]="showTriageModal" [style.display]="showTriageModal ? 'block' : 'none'" *ngIf="showTriageModal && selectedUrgence">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">
+          <i class="fas fa-stethoscope me-2"></i>
+          Triage - {{ selectedUrgence.patientName }}
+        </h5>
+        <button type="button" class="btn-close" (click)="closeTriageModal()"></button>
+      </div>
+      <div class="modal-body">
+        <form>
+          <div class="mb-3">
+            <label class="form-label">Priorité *</label>
+            <select class="form-select" [(ngModel)]="triageData.priority" name="priority" required>
+              <option *ngFor="let priority of priorities" [value]="priority">
+                {{ getPriorityLabel(priority) }}
+              </option>
+            </select>
+          </div>
+          <div class="mb-3">
+            <label class="form-label">Médecin assigné *</label>
+            <select class="form-select" [(ngModel)]="triageData.doctorId" name="doctorId" required>
+              <option value="0">Sélectionner un médecin</option>
+              <option *ngFor="let doctor of doctors" [value]="doctor.id">
+                {{ doctor.firstName }} {{ doctor.lastName }} - {{ doctor.speciality }}
+              </option>
+            </select>
+          </div>
+        </form>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" (click)="closeTriageModal()">Annuler</button>
+        <button type="button" class="btn btn-info" (click)="performTriage()" [disabled]="loading || !triageData.doctorId">
+          <span class="spinner-border spinner-border-sm me-2" *ngIf="loading"></span>
+          Effectuer le triage
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Treatment Modal -->
+<div class="modal fade" [class.show]="showTreatmentModal" [style.display]="showTreatmentModal ? 'block' : 'none'" *ngIf="showTreatmentModal && selectedUrgence">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">
+          <i class="fas fa-play me-2"></i>
+          Commencer le traitement - {{ selectedUrgence.patientName }}
+        </h5>
+        <button type="button" class="btn-close" (click)="closeTreatmentModal()"></button>
+      </div>
+      <div class="modal-body">
+        <form>
+          <div class="mb-3">
+            <label class="form-label">Numéro de salle *</label>
+            <input type="text" class="form-control" [(ngModel)]="treatmentData.roomNumber" name="roomNumber" required placeholder="Ex: 101, A-12, Urgences-3">
+          </div>
+        </form>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" (click)="closeTreatmentModal()">Annuler</button>
+        <button type="button" class="btn btn-primary" (click)="startTreatment()" [disabled]="loading || !treatmentData.roomNumber">
+          <span class="spinner-border spinner-border-sm me-2" *ngIf="loading"></span>
+          Commencer le traitement
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Modal Backdrop -->
+<div class="modal-backdrop fade show" *ngIf="showCreateModal || showTriageModal || showTreatmentModal"></div>
