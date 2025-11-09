@@ -24,7 +24,11 @@ public class DemoApiGatewayApplication {
 						.uri("lb://demoCandidat5SE2"))
 				.route("routejob",r->r.path("/jobs/**")
 						.uri("lb://MS-job-s"))
+				.route("pharmacie-service", r -> r.path("/pharmacie/**")
+						.filters(f -> f.stripPrefix(1)) // <-- supprime /pharmacie
+						.uri("lb://PHARMACIE"))
 				.build();
+
 
 
 	}
