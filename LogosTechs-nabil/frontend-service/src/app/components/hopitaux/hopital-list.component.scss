@@ -1,0 +1,135 @@
+/* Styles for hopital list component - modern, accessible and responsive */
+
+/* Container card style (scoped to this component) */
+.container.mt-4 {
+  max-width: 1100px;
+  margin: 1.5rem auto;
+  background: #ffffff;
+  padding: 1.25rem 1.5rem;
+  border-radius: 12px;
+  border: 1px solid rgba(15, 23, 42, 0.04);
+  box-shadow: 0 8px 24px rgba(15,23,42,0.04);
+}
+
+/* Header */
+.container.mt-4 h2 {
+  font-size: 1.6rem;
+  color: #0f172a;
+  font-weight: 700;
+  margin-bottom: 1rem;
+}
+
+/* Search input and add button row */
+.input-group .form-control {
+  border-radius: 8px 0 0 8px;
+}
+.input-group .btn-outline-secondary {
+  border-radius: 0 8px 8px 0;
+}
+.text-end .btn-primary {
+  border-radius: 8px;
+  padding: 0.5rem 0.9rem;
+}
+
+/* Table styling */
+.table-responsive {
+  margin-top: 0.6rem;
+}
+.table {
+  border-collapse: separate;
+  border-spacing: 0 6px;
+}
+.table thead th {
+  background: #111827; /* dark header */
+  color: #ffffff;
+  font-weight: 700;
+  border: none;
+  vertical-align: middle;
+  padding: 0.85rem 0.9rem;
+}
+.table tbody tr {
+  background: #ffffff;
+  box-shadow: 0 1px 0 rgba(15,23,42,0.04);
+}
+.table td {
+  vertical-align: middle;
+  padding: 0.75rem 0.9rem;
+}
+.table tbody tr:hover {
+  transform: translateY(-1px);
+  transition: transform 120ms ease;
+}
+
+/* Badges */
+.badge.bg-success {
+  background-color: #16a34a !important; /* green */
+}
+.badge.bg-warning {
+  background-color: #f59e0b !important; /* amber */
+  color: #111827 !important;
+}
+.badge.bg-info {
+  background-color: #06b6d4 !important; /* cyan */
+}
+
+/* Actions buttons */
+.btn-sm {
+  padding: 0.35rem 0.55rem;
+  border-radius: 8px;
+}
+.btn-outline-primary {
+  color: #0f172a;
+  border-color: #c7d2fe;
+}
+.btn-outline-primary:hover {
+  background: #eef2ff;
+}
+.btn-outline-danger {
+  border-color: #fecaca;
+}
+.btn-outline-danger:hover {
+  background: #fff1f2;
+}
+
+/* Empty state */
+.text-center.text-muted {
+  padding: 3.5rem 0;
+  color: #6b7280;
+}
+
+/* Responsive tweaks */
+@media (max-width: 768px) {
+  .table thead {
+    display: none; /* hide header on small screens */
+  }
+  .table tbody tr {
+    display: block;
+    margin-bottom: 0.75rem;
+    box-shadow: 0 6px 18px rgba(2,6,23,0.04);
+    border-radius: 10px;
+    padding: 0.75rem;
+  }
+  .table tbody td {
+    display: flex;
+    justify-content: space-between;
+    padding: 0.45rem 0.6rem;
+  }
+  .table tbody td::before {
+    content: attr(data-label);
+    color: #6b7280;
+    font-weight: 600;
+    margin-right: 0.5rem;
+    flex: 1 1 40%;
+  }
+  .table tbody td span.badge {
+    flex: 0 0 auto;
+  }
+  .text-end { text-align: left !important; }
+}
+
+/* Accessible focus-visible */
+.btn:focus-visible, .btn-outline-primary:focus-visible, .btn-outline-danger:focus-visible {
+  outline: 3px solid rgba(59,130,246,0.12);
+  outline-offset: 2px;
+}
+/* Styles for hopital list component */

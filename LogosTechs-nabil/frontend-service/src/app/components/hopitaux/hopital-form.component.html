@@ -1,0 +1,50 @@
+<div class="container mt-4">
+  <div class="row">
+    <div class="col-12">
+      <h2 *ngIf="!isEditMode">Ajouter un Hôpital</h2>
+      <h2 *ngIf="isEditMode">Modifier l'Hôpital</h2>
+
+      <form [formGroup]="hopitalForm" (ngSubmit)="onSubmit()">
+        <div class="mb-3">
+          <label class="form-label">Nom *</label>
+          <input formControlName="nom" class="form-control" />
+        </div>
+
+        <div class="mb-3">
+          <label class="form-label">Adresse *</label>
+          <input formControlName="adresse" class="form-control" />
+        </div>
+
+        <div class="mb-3">
+          <label class="form-label">Téléphone *</label>
+          <input formControlName="telephone" class="form-control" />
+        </div>
+
+        <div class="mb-3">
+          <label class="form-label">Email</label>
+          <input formControlName="email" class="form-control" />
+        </div>
+
+        <div class="mb-3">
+          <label class="form-label">Type *</label>
+          <select formControlName="type" class="form-select">
+            <option value="public">public</option>
+            <option value="prive">prive</option>
+          </select>
+        </div>
+
+        <div class="mb-3">
+          <label class="form-label">Capacité lits *</label>
+          <input type="number" formControlName="capaciteLits" class="form-control" />
+        </div>
+
+        <div class="d-flex justify-content-end">
+          <button class="btn btn-secondary me-2" routerLink="/hopitaux">Annuler</button>
+          <button class="btn btn-primary" type="submit" [disabled]="hopitalForm.invalid">
+            {{ isEditMode ? 'Enregistrer' : 'Créer' }}
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
