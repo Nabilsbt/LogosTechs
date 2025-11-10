@@ -3,6 +3,7 @@ package com.esprit.microservice.event.Controller;
 
 import com.esprit.microservice.event.Entity.Event;
 import com.esprit.microservice.event.Service.IEventService;
+import com.esprit.microservice.event.dto.DTOassurance;
 import com.esprit.microservice.event.dto.PharmacieDTO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
@@ -49,6 +50,16 @@ public class EventController {
     @GetMapping("/pharmacies/{idPharmacie}")
     public PharmacieDTO getPharmacieById(@PathVariable Long idPharmacie) {
         return eventService.getPharmacieById(idPharmacie);
+    }
+
+    @GetMapping("/assurances")
+    public List<DTOassurance> getAllAssurances() {
+        return eventService.getAssurancesFromAssuranceService();
+    }
+
+    @GetMapping("/assurances/{id}")
+    public DTOassurance getAssuranceById(@PathVariable Long id) {
+        return eventService.getAssuranceDetails(id);
     }
 }
 

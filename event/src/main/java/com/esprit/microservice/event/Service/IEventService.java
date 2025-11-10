@@ -2,6 +2,7 @@ package com.esprit.microservice.event.Service;
 
 
 import com.esprit.microservice.event.Entity.Event;
+import com.esprit.microservice.event.dto.DTOassurance;
 import com.esprit.microservice.event.dto.PharmacieDTO;
 
 import java.util.List;
@@ -20,4 +21,6 @@ public interface IEventService {
     List<PharmacieDTO> getAllPharmacies();
 
     PharmacieDTO getPharmacieById(Long idPharmacie);
+    List<DTOassurance> getAssurancesFromAssuranceService();
+    DTOassurance getAssuranceDetails(Long id);
 }

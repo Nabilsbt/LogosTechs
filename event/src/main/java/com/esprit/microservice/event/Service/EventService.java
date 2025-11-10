@@ -1,8 +1,10 @@
 package com.esprit.microservice.event.Service;
 
+import com.esprit.microservice.event.Client.AssuranceClient;
 import com.esprit.microservice.event.Client.PharmacieClient;
 import com.esprit.microservice.event.Entity.Event;
 import com.esprit.microservice.event.Repo.EventRepo;
+import com.esprit.microservice.event.dto.DTOassurance;
 import com.esprit.microservice.event.dto.PharmacieDTO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -16,6 +18,8 @@ public class EventService implements IEventService {
     private EventRepo eventRepository;
     @Autowired
     private PharmacieClient pharmacieClient ;
+    @Autowired
+    private AssuranceClient assuranceClient ;
 
     @Override
     public Event createEvent(Event event) {
@@ -57,4 +61,15 @@ public class EventService implements IEventService {
     public PharmacieDTO getPharmacieById(Long idPharmacie) {
         return pharmacieClient.getPharmacieById(idPharmacie);
     }
+
+    public List<DTOassurance> getAssurancesFromAssuranceService() {
+        return assuranceClient.getAllAssurances();
+    }
+
+    public DTOassurance getAssuranceDetails(Long id) {
+        return assuranceClient.getAssuranceById(id);
+    }
+
 }
+
+
