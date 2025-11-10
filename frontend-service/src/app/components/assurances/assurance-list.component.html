@@ -1,0 +1,68 @@
+<div class="container mt-5">
+  <div class="row mb-4">
+    <div class="col-md-6">
+      <h1>Assurances</h1>
+    </div>
+    <div class="col-md-6 text-end">
+      <button class="btn btn-primary" (click)="addNewAssurance()">
+        ➕ Add New Assurance
+      </button>
+    </div>
+  </div>
+
+  <!-- Error Message -->
+  <div *ngIf="errorMessage" class="alert alert-danger alert-dismissible fade show" role="alert">
+    {{ errorMessage }}
+  </div>
+
+  <!-- Loading Spinner -->
+  <div *ngIf="loading" class="text-center">
+    <div class="spinner-border" role="status">
+      <span class="visually-hidden">Loading...</span>
+    </div>
+  </div>
+
+  <!-- Assurances Table -->
+  <div *ngIf="!loading" class="table-responsive">
+    <table class="table table-striped table-hover">
+      <thead class="table-dark">
+        <tr>
+          <th>ID</th>
+          <th>Nom</th>
+          <th>Adresse</th>
+          <th>Téléphone</th>
+          <th>Email</th>
+          <th>Couverture</th>
+          <th>Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let assurance of assurances">
+          <td>{{ assurance.idAssurance }}</td>
+          <td>{{ assurance.nom }}</td>
+          <td>{{ assurance.adresse }}</td>
+          <td>{{ assurance.telephone }}</td>
+          <td>{{ assurance.email }}</td>
+          <td>{{ assurance.couverture }}</td>
+          <td>
+            <button
+              class="btn btn-sm btn-warning me-2"
+              (click)="editAssurance(assurance.idAssurance)"
+            >
+              ✏️ Edit
+            </button>
+            <button
+              class="btn btn-sm btn-danger"
+              (click)="deleteAssurance(assurance.idAssurance)"
+            >
+              🗑️ Delete
+            </button>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+    <div *ngIf="assurances.length === 0" class="alert alert-info">
+      No assurances found. <a href="javascript:void(0)" (click)="addNewAssurance()">Create one</a>
+    </div>
+  </div>
+</div>

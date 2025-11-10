@@ -1,0 +1,128 @@
+<div class="container mt-5">
+  <div class="row justify-content-center">
+    <div class="col-md-8">
+      <div class="card">
+        <div class="card-header bg-primary text-white">
+          <h2 class="mb-0">
+            {{ isEditMode ? '✏️ Edit Assurance' : '➕ Add New Assurance' }}
+          </h2>
+        </div>
+
+        <div class="card-body">
+          <!-- Error Message -->
+          <div *ngIf="errorMessage" class="alert alert-danger alert-dismissible fade show" role="alert">
+            {{ errorMessage }}
+          </div>
+
+          <!-- Success Message -->
+          <div *ngIf="successMessage" class="alert alert-success alert-dismissible fade show" role="alert">
+            {{ successMessage }}
+          </div>
+
+          <!-- Loading Spinner -->
+          <div *ngIf="loading" class="text-center py-5">
+            <div class="spinner-border" role="status">
+              <span class="visually-hidden">Loading...</span>
+            </div>
+          </div>
+
+          <!-- Form -->
+          <form [formGroup]="form" (ngSubmit)="onSubmit()" *ngIf="!loading">
+            <!-- Nom Field -->
+            <div class="mb-3">
+              <label for="nom" class="form-label">
+                Nom <span class="text-danger">*</span>
+              </label>
+              <input
+                type="text"
+                class="form-control"
+                id="nom"
+                formControlName="nom"
+                placeholder="Enter assurance name"
+                [class.is-invalid]="nom?.invalid && nom?.touched"
+              />
+              <div class="invalid-feedback" *ngIf="nom?.invalid && nom?.touched">
+                <span *ngIf="nom?.errors?.['required']">Name is required.</span>
+                <span *ngIf="nom?.errors?.['minlength']">Name must be at least 2 characters.</span>
+              </div>
+            </div>
+
+            <!-- Adresse Field -->
+            <div class="mb-3">
+              <label for="adresse" class="form-label">Adresse</label>
+              <input
+                type="text"
+                class="form-control"
+                id="adresse"
+                formControlName="adresse"
+                placeholder="Enter address"
+              />
+            </div>
+
+            <!-- Téléphone Field -->
+            <div class="mb-3">
+              <label for="telephone" class="form-label">Téléphone</label>
+              <input
+                type="tel"
+                class="form-control"
+                id="telephone"
+                formControlName="telephone"
+                placeholder="Enter phone number"
+                [class.is-invalid]="telephone?.invalid && telephone?.touched"
+              />
+              <div class="invalid-feedback" *ngIf="telephone?.invalid && telephone?.touched">
+                <span *ngIf="telephone?.errors?.['pattern']">Please enter a valid phone number.</span>
+              </div>
+            </div>
+
+            <!-- Email Field -->
+            <div class="mb-3">
+              <label for="email" class="form-label">Email</label>
+              <input
+                type="email"
+                class="form-control"
+                id="email"
+                formControlName="email"
+                placeholder="Enter email address"
+                [class.is-invalid]="email?.invalid && email?.touched"
+              />
+              <div class="invalid-feedback" *ngIf="email?.invalid && email?.touched">
+                <span *ngIf="email?.errors?.['email']">Please enter a valid email address.</span>
+              </div>
+            </div>
+
+            <!-- Couverture Field -->
+            <div class="mb-3">
+              <label for="couverture" class="form-label">Couverture</label>
+              <textarea
+                class="form-control"
+                id="couverture"
+                formControlName="couverture"
+                placeholder="Enter coverage details"
+                rows="3"
+              ></textarea>
+            </div>
+
+            <!-- Buttons -->
+            <div class="d-flex gap-2 mt-4">
+              <button
+                type="submit"
+                class="btn btn-primary"
+                [disabled]="form.invalid"
+              >
+                {{ isEditMode ? '💾 Update' : '➕ Create' }}
+              </button>
+              <button
+                type="button"
+                class="btn btn-secondary"
+                (click)="onCancel()"
+              >
+                ❌ Cancel
+              </button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
