@@ -3,6 +3,7 @@ package com.esprit.microservice.event.Controller;
 
 import com.esprit.microservice.event.Entity.Event;
 import com.esprit.microservice.event.Service.IEventService;
+import com.esprit.microservice.event.dto.PharmacieDTO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
@@ -39,6 +40,15 @@ public class EventController {
     @DeleteMapping("/{id}")
     public void deleteEvent(@PathVariable Long id) {
         eventService.deleteEvent(id);
+    }
+    @GetMapping("/pharmacies")
+    public List<PharmacieDTO> getAllPharmacies() {
+        return eventService.getAllPharmacies();
+    }
+
+    @GetMapping("/pharmacies/{idPharmacie}")
+    public PharmacieDTO getPharmacieById(@PathVariable Long idPharmacie) {
+        return eventService.getPharmacieById(idPharmacie);
     }
 }
 
