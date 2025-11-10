@@ -8,12 +8,14 @@ import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
 import { UserListComponent } from './components/users/user-list.component';
 import { UrgenceListComponent } from './components/urgences/urgence-list.component';
+import { PharmaciesComponent } from './components/pharmacies/pharmacies.component';
 
 @NgModule({
   declarations: [
     AppComponent,
     UserListComponent,
-    UrgenceListComponent
+    UrgenceListComponent,
+    PharmaciesComponent
   ],
   imports: [
     BrowserModule,

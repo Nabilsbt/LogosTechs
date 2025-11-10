@@ -4,5 +4,5 @@ export const environment = {
   urgenceServiceUrl: 'http://localhost:8082',
   configServerUrl: 'http://localhost:8888',
   eurekaServerUrl: 'http://localhost:8761',
-  apiGatewayUrl: 'http://localhost:8080'
+  apiGatewayUrl: 'http://localhost:8083'
 };

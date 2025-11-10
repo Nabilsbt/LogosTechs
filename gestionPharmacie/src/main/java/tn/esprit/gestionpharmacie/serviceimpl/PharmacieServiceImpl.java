@@ -2,8 +2,10 @@ package tn.esprit.gestionpharmacie.serviceimpl;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import tn.esprit.gestionpharmacie.Client.ClientEvent;
 import tn.esprit.gestionpharmacie.Entity.Pharmacie;
 import tn.esprit.gestionpharmacie.Repository.PharmacieRepo;
+import tn.esprit.gestionpharmacie.dto.EventDTO;
 import tn.esprit.gestionpharmacie.service.PharmacieService;
 
 import java.util.List;
@@ -13,6 +15,7 @@ import java.util.List;
 public class PharmacieServiceImpl implements PharmacieService {
 
     private final PharmacieRepo pharmacieRepository;
+    private final ClientEvent eventClient;
 
     @Override
     public Pharmacie ajouterPharmacie(Pharmacie pharmacie) {
@@ -51,6 +54,13 @@ public class PharmacieServiceImpl implements PharmacieService {
     @Override
     public void deletePharmacie(Long idPharmacie) {
         pharmacieRepository.deleteById(idPharmacie);
+    }
+    public List<EventDTO> getAllEvents() {
+        return eventClient.getAllEvents();
+    }
+
+    public EventDTO getEventById(Long eventId) {
+        return eventClient.getEventById(eventId);
     }
 
 }

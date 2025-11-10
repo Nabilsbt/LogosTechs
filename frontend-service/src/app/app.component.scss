@@ -1,0 +1,146 @@
+// Variables
+$navbar-height: 60px;
+$footer-height: 60px;
+
+:host {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+}
+
+// Navbar styles
+.navbar {
+  height: $navbar-height;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+
+  .navbar-brand {
+    font-weight: 600;
+    font-size: 1.25rem;
+    
+    i {
+      color: rgba(255, 255, 255, 0.9);
+    }
+  }
+
+  .nav-link {
+    padding: 0.5rem 1rem;
+    position: relative;
+    
+    &.active {
+      font-weight: 500;
+      
+      &:after {
+        content: '';
+        position: absolute;
+        bottom: -2px;
+        left: 1rem;
+        right: 1rem;
+        height: 2px;
+        background: white;
+        border-radius: 2px;
+      }
+    }
+
+    i {
+      font-size: 1.1em;
+    }
+  }
+
+  .dropdown-menu {
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    border: none;
+    
+    .dropdown-item {
+      padding: 0.5rem 1rem;
+      
+      i {
+        width: 1.5rem;
+        text-align: center;
+      }
+      
+      &:hover {
+        background-color: rgba(0, 123, 255, 0.1);
+      }
+      
+      &.text-danger:hover {
+        background-color: rgba(220, 53, 69, 0.1);
+      }
+    }
+  }
+}
+
+// Main content
+main {
+  flex: 1;
+  background-color: #f8f9fa;
+  min-height: calc(100vh - #{$navbar-height} - #{$footer-height});
+  
+  .breadcrumb {
+    background-color: white;
+    border-radius: 0.5rem;
+    padding: 0.75rem 1rem;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+    
+    .breadcrumb-item {
+      + .breadcrumb-item::before {
+        font-family: "Font Awesome 5 Free";
+        font-weight: 900;
+        content: "\f054";
+        font-size: 0.75rem;
+      }
+    }
+  }
+
+  .content-wrapper {
+    background-color: white;
+    border-radius: 0.5rem;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+    padding: 1.5rem;
+  }
+}
+
+// Footer
+.footer {
+  height: $footer-height;
+  border-top: 1px solid rgba(0, 0, 0, 0.1);
+  
+  .text-muted {
+    font-size: 0.875rem;
+  }
+  
+  .fa-heart {
+    font-size: 0.875rem;
+  }
+}
+
+// Notifications badge
+.badge {
+  font-size: 0.65rem;
+  padding: 0.25em 0.4em;
+  font-weight: 600;
+}
+
+// Responsive adjustments
+@media (max-width: 768px) {
+  .navbar {
+    .nav-link {
+      padding: 0.5rem;
+    }
+    
+    .navbar-brand {
+      font-size: 1.1rem;
+    }
+  }
+  
+  main {
+    padding: 1rem !important;
+    
+    .content-wrapper {
+      padding: 1rem;
+    }
+  }
+  
+  .footer {
+    padding: 1rem !important;
+  }
+}

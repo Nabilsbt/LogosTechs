@@ -6,6 +6,11 @@ import org.springframework.cloud.client.discovery.EnableDiscoveryClient;
 import org.springframework.cloud.gateway.route.RouteLocator;
 import org.springframework.cloud.gateway.route.builder.RouteLocatorBuilder;
 import org.springframework.context.annotation.Bean;
+import org.springframework.web.cors.CorsConfiguration;
+import org.springframework.web.cors.reactive.CorsWebFilter;
+import org.springframework.web.cors.reactive.UrlBasedCorsConfigurationSource;
+
+import java.util.Arrays;
 
 @SpringBootApplication
 @EnableDiscoveryClient
@@ -15,21 +20,51 @@ public class DemoApiGatewayApplication {
 		SpringApplication.run(DemoApiGatewayApplication.class, args);
 	}
 
-
+	// Définition des routes Gateway
 	@Bean
-	public RouteLocator  gatewayRoutes(RouteLocatorBuilder builder)
-	{
+	public RouteLocator gatewayRoutes(RouteLocatorBuilder builder) {
 		return builder.routes()
-				.route("routecandidat",r->r.path("/candidats/**")
-						.uri("lb://demoCandidat5SE2"))
-				.route("routejob",r->r.path("/jobs/**")
-						.uri("lb://MS-job-s"))
+				// Service Pharmacie
 				.route("pharmacie-service", r -> r.path("/pharmacie/**")
-						.filters(f -> f.stripPrefix(1)) // <-- supprime /pharmacie
+						.filters(f -> f.stripPrefix(1))
 						.uri("lb://PHARMACIE"))
+
+				// Service Candidats
+				.route("candidats-service", r -> r.path("/candidats/**")
+						.filters(f -> f.stripPrefix(1))
+						.uri("lb://demoCandidat5SE2"))
+
+				// Service Jobs
+				.route("jobs-service", r -> r.path("/jobs/**")
+						.filters(f -> f.stripPrefix(1))
+						.uri("lb://MS-job-s"))
+
+				// Service Hopital
+				.route("hopital-service", r -> r.path("/api/hopitaux/**")
+						.filters(f -> f.stripPrefix(1))
+						.uri("lb://hopital-service"))
+
+				// Service Urgences
+				.route("urgences-service", r -> r.path("/api/urgences/**")
+						.filters(f -> f.stripPrefix(1))
+						.uri("lb://urgences"))
+
 				.build();
+	}
 
+	// CORS pour Angular
+	@Bean
+	public CorsWebFilter corsFilter() {
+		CorsConfiguration corsConfig = new CorsConfiguration();
+		corsConfig.setAllowedOrigins(Arrays.asList("http://localhost:4200"));
+		corsConfig.setMaxAge(3600L);
+		corsConfig.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE", "OPTIONS"));
+		corsConfig.setAllowedHeaders(Arrays.asList("*"));
+		corsConfig.setAllowCredentials(true);
 
+		UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
+		source.registerCorsConfiguration("/**", corsConfig);
 
+		return new CorsWebFilter(source);
 	}
 }

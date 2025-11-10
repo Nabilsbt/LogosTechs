@@ -5,15 +5,17 @@ import org.springframework.web.bind.annotation.*;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 import tn.esprit.gestionpharmacie.Entity.Pharmacie;
+import tn.esprit.gestionpharmacie.dto.EventDTO;
 import tn.esprit.gestionpharmacie.service.PharmacieService;
+import tn.esprit.gestionpharmacie.serviceimpl.PharmacieServiceImpl;
 
 @RestController
 @RequestMapping("/api/pharmacies")
 @RequiredArgsConstructor
-@CrossOrigin("*")
+
 public class PharmacieController {
 
-    private final PharmacieService pharmacieService;
+    private final PharmacieServiceImpl pharmacieService;
 
     @PostMapping
     public Mono<Pharmacie> ajouter(@RequestBody Pharmacie pharmacie) {
@@ -43,6 +45,15 @@ public class PharmacieController {
     @GetMapping("/search")
     public Flux<Pharmacie> search(@RequestParam String keyword) {
         return Flux.fromIterable(pharmacieService.searchPharmacie(keyword));
+    }
+    @GetMapping("/events")
+    public Flux<EventDTO> getAllEvents() {
+        return Flux.fromIterable(pharmacieService.getAllEvents());
+    }
+
+    @GetMapping("/events/{eventId}")
+    public Mono<EventDTO> getEventById(@PathVariable Long eventId) {
+        return Mono.just(pharmacieService.getEventById(eventId));
     }
 
 }
