@@ -8,12 +8,18 @@ import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
 import { UserListComponent } from './components/users/user-list.component';
 import { UrgenceListComponent } from './components/urgences/urgence-list.component';
+import { EventListComponent } from './components/events/event-list.component';
+import { EventFormComponent } from './components/events/event-form.component';
+import { EventDetailComponent } from './components/events/event-detail.component';
 
 @NgModule({
   declarations: [
     AppComponent,
     UserListComponent,
-    UrgenceListComponent
+    UrgenceListComponent,
+    EventListComponent,
+    EventFormComponent,
+    EventDetailComponent
   ],
   imports: [
     BrowserModule,
