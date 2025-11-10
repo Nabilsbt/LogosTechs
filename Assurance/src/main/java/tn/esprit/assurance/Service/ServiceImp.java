@@ -2,6 +2,8 @@ package tn.esprit.assurance.Service;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import tn.esprit.assurance.Client.ClientEvent;
+import tn.esprit.assurance.DTO.DTOevent;
 import tn.esprit.assurance.Entity.Assurance;
 import tn.esprit.assurance.Repository.AssuranceRepo;
 
@@ -12,11 +14,19 @@ import java.util.Optional;
 public class ServiceImp implements IService {
 
     private final AssuranceRepo assuranceRepo;
-
+    @Autowired
+    private ClientEvent clientEvent;
     // Injection via constructeur obligatoire pour que Spring l'instancie correctement
     @Autowired
     public ServiceImp(AssuranceRepo assuranceRepo) {
         this.assuranceRepo = assuranceRepo;
+    }
+    public List<DTOevent> getEventsFromEventService() {
+        return clientEvent.getAllEvents();
+    }
+
+    public DTOevent getEventDetails(Long idEvent) {
+        return clientEvent.getEventById(idEvent);
     }
 
     @Override
