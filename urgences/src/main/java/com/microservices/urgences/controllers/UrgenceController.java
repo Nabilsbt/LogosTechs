@@ -1,5 +1,6 @@
 package com.microservices.urgences.controllers;
 
+import com.microservices.urgences.Dto.Hopital;
 import com.microservices.urgences.entities.Priority;
 import com.microservices.urgences.entities.Status;
 import com.microservices.urgences.entities.Urgence;
@@ -16,7 +17,6 @@ import java.util.Optional;
 
 @RestController
 @RequestMapping("/api/urgences")
-@CrossOrigin(origins = "*")
 public class UrgenceController {
     
     @Autowired
@@ -140,6 +140,20 @@ public class UrgenceController {
             urgenceService.deleteUrgence(id);
             return ResponseEntity.noContent().build();
         } catch (RuntimeException e) {
+            return ResponseEntity.notFound().build();
+        }
+    }
+    @GetMapping("/hopitaux")
+    public ResponseEntity<List<Hopital>> getAllHopitaux() {
+        return ResponseEntity.ok(urgenceService.getAllHopitaux());
+    }
+
+    @GetMapping("/hopitaux/{id}")
+    public ResponseEntity<Hopital> getHopitalById(@PathVariable Long id) {
+        Hopital hopital = urgenceService.getHopitalById(id);
+        if (hopital != null) {
+            return ResponseEntity.ok(hopital);
+        } else {
             return ResponseEntity.notFound().build();
         }
     }

@@ -6,6 +6,10 @@ import com.microservices.urgences.entities.Urgence;
 import com.microservices.urgences.repositories.UrgenceRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import com.microservices.urgences.Dto.Hopital;
+import com.microservices.urgences.repositories.HopitalClient;
+
+
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -16,7 +20,10 @@ public class UrgenceService {
     
     @Autowired
     private UrgenceRepository urgenceRepository;
-    
+    @Autowired
+    private HopitalClient hopitalClient;
+
+
     public List<Urgence> getAllUrgences() {
         return urgenceRepository.findAll();
     }
@@ -129,4 +136,13 @@ public class UrgenceService {
                 .orElseThrow(() -> new RuntimeException("Urgence not found with id: " + id));
         urgenceRepository.delete(urgence);
     }
+    // Communication avec le microservice Hopital via Feign
+    public List<Hopital> getAllHopitaux() {
+        return hopitalClient.getAllHopitaux();
+    }
+
+    public Hopital getHopitalById(Long id) {
+        return hopitalClient.getHopitalById(id);
+    }
+
 }

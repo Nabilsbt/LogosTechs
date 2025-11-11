@@ -1,0 +1,34 @@
+<div class="container py-4" *ngIf="!loading">
+  <h2 class="mb-3">{{ isEdit ? 'Modifier' : 'Créer' }} un événement</h2>
+
+  <div *ngIf="error" class="alert alert-danger">{{ error }}</div>
+
+  <form (ngSubmit)="submit()" #formRef="ngForm" class="row g-3">
+    <div class="col-md-6">
+      <label class="form-label">Titre</label>
+      <input class="form-control" [(ngModel)]="model.title" name="title" required />
+    </div>
+    <div class="col-md-6">
+      <label class="form-label">Type</label>
+      <input class="form-control" [(ngModel)]="model.type" name="type" required placeholder="campagne, conférence, don de sang..." />
+    </div>
+    <div class="col-md-6">
+      <label class="form-label">Date</label>
+      <input class="form-control" type="date" [(ngModel)]="model.date" name="date" required />
+    </div>
+    <div class="col-md-6">
+      <label class="form-label">Lieu</label>
+      <input class="form-control" [(ngModel)]="model.location" name="location" required />
+    </div>
+    <div class="col-12">
+      <label class="form-label">Description</label>
+      <textarea class="form-control" rows="4" [(ngModel)]="model.description" name="description"></textarea>
+    </div>
+    <div class="col-12 d-flex gap-2">
+      <button class="btn btn-primary" type="submit" [disabled]="formRef.invalid">
+        {{ isEdit ? 'Enregistrer' : 'Créer' }}
+      </button>
+      <a class="btn btn-light border" [routerLink]="['/events']">Annuler</a>
+    </div>
+  </form>
+</div>

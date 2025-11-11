@@ -1,8 +1,8 @@
 export const environment = {
   production: true,
-  userServiceUrl: 'http://production-user-service:8081',
-  urgenceServiceUrl: 'http://production-urgence-service:8082',
+  apiGatewayUrl: 'http://production-api-gateway:8083',
+  userServiceUrl: 'http://production-api-gateway:8083/user-service-php',
+  urgenceServiceUrl: 'http://production-api-gateway:8083/urgences',
   configServerUrl: 'http://production-config-server:8888',
-  eurekaServerUrl: 'http://production-eureka-server:8761',
-  apiGatewayUrl: 'http://production-api-gateway:8080'
+  eurekaServerUrl: 'http://production-eureka-server:8761'
 };

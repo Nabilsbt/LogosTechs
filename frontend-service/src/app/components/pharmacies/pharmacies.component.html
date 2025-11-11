@@ -1,0 +1,143 @@
+<div class="container mt-4">
+  <!-- Alert Messages -->
+  <div class="alert alert-danger" *ngIf="error">{{ error }}</div>
+  <div class="alert alert-success" *ngIf="success">{{ success }}</div>
+
+  <!-- Create/Edit Form -->
+  <div class="card mb-4">
+    <div class="card-header">
+      <h3>{{ isEditing ? 'Modifier' : 'Ajouter' }} une pharmacie</h3>
+    </div>
+    <div class="card-body">
+      <form #pharmacieForm="ngForm" (ngSubmit)="onSubmit(pharmacieForm)">
+        <!-- Hidden ID field for editing -->
+        <input type="hidden" name="id" [(ngModel)]="formData.id">
+        
+        <!-- Nom -->
+        <div class="form-group mb-3">
+          <label for="nom">Nom</label>
+          <input type="text" 
+                 class="form-control" 
+                 id="nom" 
+                 name="nom"
+                 [(ngModel)]="formData.nom"
+                 required
+                 #nom="ngModel">
+          <div class="invalid-feedback" *ngIf="nom.invalid && (nom.dirty || nom.touched)">
+            Le nom est requis
+          </div>
+        </div>
+
+        <!-- Adresse -->
+        <div class="form-group mb-3">
+          <label for="adresse">Adresse</label>
+          <input type="text" 
+                 class="form-control" 
+                 id="adresse" 
+                 name="adresse"
+                 [(ngModel)]="formData.adresse"
+                 required
+                 #adresse="ngModel">
+          <div class="invalid-feedback" *ngIf="adresse.invalid && (adresse.dirty || adresse.touched)">
+            L'adresse est requise
+          </div>
+        </div>
+
+        <!-- Téléphone -->
+        <div class="form-group mb-3">
+          <label for="telephone">Téléphone</label>
+          <input type="tel" 
+                 class="form-control" 
+                 id="telephone" 
+                 name="telephone"
+                 [(ngModel)]="formData.telephone"
+                 required
+                 pattern="[0-9]{10}"
+                 #telephone="ngModel">
+          <div class="invalid-feedback" *ngIf="telephone.invalid && (telephone.dirty || telephone.touched)">
+            Un numéro de téléphone valide est requis (10 chiffres)
+          </div>
+        </div>
+
+        <!-- Email -->
+        <div class="form-group mb-3">
+          <label for="email">Email</label>
+          <input type="email" 
+                 class="form-control" 
+                 id="email" 
+                 name="email"
+                 [(ngModel)]="formData.email"
+                 required
+                 email
+                 #email="ngModel">
+          <div class="invalid-feedback" *ngIf="email.invalid && (email.dirty || email.touched)">
+            Un email valide est requis
+          </div>
+        </div>
+
+        <!-- Submit & Reset Buttons -->
+        <div class="d-flex gap-2">
+          <button type="submit" 
+                  class="btn btn-primary" 
+                  [disabled]="pharmacieForm.invalid || loading">
+            <span class="spinner-border spinner-border-sm" *ngIf="loading"></span>
+            {{ isEditing ? 'Modifier' : 'Ajouter' }}
+          </button>
+          <button type="button" 
+                  class="btn btn-secondary" 
+                  (click)="resetForm(pharmacieForm)"
+                  [disabled]="loading">
+            Annuler
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Pharmacies List -->
+  <div class="card">
+    <div class="card-header">
+      <h3>Liste des pharmacies</h3>
+    </div>
+    <div class="card-body">
+      <div class="table-responsive">
+        <table class="table table-striped">
+          <thead>
+            <tr>
+              <th>Nom</th>
+              <th>Adresse</th>
+              <th>Téléphone</th>
+              <th>Email</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let pharmacie of pharmacies">
+              <td>{{ pharmacie.nom }}</td>
+              <td>{{ pharmacie.adresse }}</td>
+              <td>{{ pharmacie.telephone }}</td>
+              <td>{{ pharmacie.email }}</td>
+              <td>
+                <div class="btn-group">
+                  <button class="btn btn-sm btn-primary" 
+                          (click)="editPharmacie(pharmacie)"
+                          [disabled]="loading">
+                    <i class="fas fa-edit"></i> Modifier
+                  </button>
+                  <button class="btn btn-sm btn-danger" 
+                          [disabled]="loading"
+                          (click)="deletePharmacie(pharmacie.id!)">
+                    <i class="fas fa-trash"></i> Supprimer
+                  </button>
+                </div>
+              </td>
+            </tr>
+            <tr *ngIf="pharmacies.length === 0">
+              <td colspan="5" class="text-center">Aucune pharmacie trouvée</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</div>
