@@ -1,8 +1,7 @@
 import { Component } from '@angular/core';
 import { FormBuilder, Validators } from '@angular/forms';
-import { Router } from '@angular/router';
 import { AppointmentsService } from '../../services/appointments.service';
-import { Appointment } from '../../models/appointment.model';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-appointment-form',
@@ -10,15 +9,15 @@ import { Appointment } from '../../models/appointment.model';
   styleUrls: ['./appointment-form.component.scss']
 })
 export class AppointmentFormComponent {
-  submitting = false;
-  error?: string;
+  loading = false;
+  error = '';
 
   form = this.fb.group({
-    patientId: [1, [Validators.required, Validators.min(1)]],
-    doctorId: [101, [Validators.required, Validators.min(1)]],
-    startLocal: ['', Validators.required], // datetime-local
-    endLocal:   ['', Validators.required],
-    reason:     ['Consultation']
+    patientId: [null, [Validators.required, Validators.min(1)]],
+    doctorId:  [null, [Validators.required, Validators.min(1)]],
+    start:     ['',  [Validators.required]], // datetime-local
+    end:       ['',  [Validators.required]],
+    reason:    ['Consultation', [Validators.maxLength(500)]]
   });
 
   constructor(
@@ -27,42 +26,56 @@ export class AppointmentFormComponent {
     private router: Router
   ) {}
 
-  private toIsoZ(localValue: string): string {
-    const d = new Date(localValue);
-    return new Date(d.getTime() - d.getTimezoneOffset()*60000).toISOString();
+  // helpers d’affichage
+  toPreview(ctl: 'start' | 'end') {
+    const v = this.form.value[ctl];
+    if (!v) return '—';
+    const d = new Date(v);
+    return d.toLocaleString();
   }
 
-  get f() { return this.form.controls; }
-
-  preview() {
+  private buildPayload() {
     const v = this.form.value;
-    if (!v.startLocal || !v.endLocal) return '';
-    const start = new Date(v.startLocal);
-    const end   = new Date(v.endLocal);
-    return `${start.toLocaleString()} → ${end.toLocaleString()}`;
+    const start = new Date(v.start!);
+    const end   = new Date(v.end!);
+
+    if (!(end > start)) {
+      throw new Error('La fin doit être après le début.');
+    }
+
+    return {
+      patientId: Number(v.patientId),
+      doctorId: Number(v.doctorId),
+      startTime: start.toISOString(), // ISO avec Z — requis par le backend
+      endTime:   end.toISOString(),
+      reason: (v.reason ?? '').trim()
+    };
   }
 
   submit() {
+    this.error = '';
     if (this.form.invalid) {
       this.form.markAllAsTouched();
       return;
     }
-    const v = this.form.value;
-    const payload: Appointment = {
-      patientId: Number(v.patientId),
-      doctorId: Number(v.doctorId),
-      startTime: this.toIsoZ(v.startLocal!),
-      endTime: this.toIsoZ(v.endLocal!),
-      reason: v.reason || ''
-    };
+    let payload: any;
+    try {
+      payload = this.buildPayload();
+    } catch (e: any) {
+      this.error = e?.message || 'Données invalides';
+      return;
+    }
 
-    this.submitting = true;
+    this.loading = true;
     this.api.create(payload).subscribe({
-      next: () => this.router.navigateByUrl('/appointments'),
-      error: (err: any) => {
+      next: () => {
+        this.loading = false;
+        this.router.navigateByUrl('/appointments');
+      },
+      error: (err) => {
         console.error(err);
+        this.loading = false;
         this.error = err?.error?.message || 'Création échouée';
-        this.submitting = false;
       }
     });
   }

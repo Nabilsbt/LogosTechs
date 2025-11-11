@@ -1,12 +1,4 @@
-.page { padding: 8px; }
-.form-card, .preview-card, .info-card {
-  border: 0; border-radius: 14px;
-  background: #fff; box-shadow: 0 4px 16px rgba(0,0,0,0.07);
-}
-.invalid { color: #d63384; font-size: 12px; margin-top: 4px; }
-.preview-line {
-  display: flex; justify-content: space-between;
-  padding: 10px 0; border-bottom: 1px dashed #e9ecef;
-  span { color: #6c757d; }
-  strong { font-weight: 700; }
-}
+.page { padding: 12px; }
+.card { border: none; box-shadow: 0 0.125rem 0.25rem rgba(0,0,0,.08); }
+.preview .row { font-size: .95rem; }
+.badge.bg-info-subtle { background: #e7f3ff; color: #0b63ce; }

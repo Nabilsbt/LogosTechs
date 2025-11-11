@@ -1,8 +1,19 @@
 import { Component, OnInit } from '@angular/core';
 import { AppointmentsService } from '../../services/appointments.service';
-import { Appointment, AppointmentStatus } from '../../models/appointment.model';
 
-type Stat = { label: string; value: number; };
+type Status = 'PENDING' | 'CONFIRMED' | 'CANCELLED' | 'COMPLETED';
+
+interface Appointment {
+  id: number;
+  patientId: number;
+  doctorId: number;
+  startTime: string; // ISO Z
+  endTime: string;   // ISO Z
+  status: Status;
+  reason?: string;
+  createdAt?: string;
+  updatedAt?: string;
+}
 
 @Component({
   selector: 'app-appointment-list',
@@ -10,26 +21,35 @@ type Stat = { label: string; value: number; };
   styleUrls: ['./appointment-list.component.scss']
 })
 export class AppointmentListComponent implements OnInit {
-  appointments: Appointment[] = [];
-  filtered: Appointment[] = [];
-  loading = false;
-  error?: string;
 
-  // Filtres UI
+  // UI state
+  loading = false;
+  error = '';
+
+  // Filtres
   q = '';
   doctorId?: number;
   patientId?: number;
-  status?: AppointmentStatus;
-  from?: string; // YYYY-MM-DD
-  to?: string;   // YYYY-MM-DD
+  status?: Status;
+  from?: string; // yyyy-MM-dd
+  to?: string;   // yyyy-MM-dd
 
-  // Stats headline
-  stats: Stat[] = [
+  // Données
+  rows: Appointment[] = [];
+  filtered: Appointment[] = []; // filtrage côté front (rapide)
+  total = 0;
+
+  // Stats (exemple simple, computed côté front)
+  stats = [
     { label: 'Total', value: 0 },
     { label: 'Confirmés', value: 0 },
     { label: 'En attente', value: 0 },
-    { label: 'Annulés', value: 0 },
+    { label: 'Annulés', value: 0 }
   ];
+
+  // pagination simple côté front (si besoin)
+  pageIndex = 0;
+  pageSize = 50;
 
   constructor(private api: AppointmentsService) {}
 
@@ -38,13 +58,15 @@ export class AppointmentListComponent implements OnInit {
   }
 
   load() {
+    this.error = '';
     this.loading = true;
-    this.api.findAll().subscribe({
-      next: (data) => {
-        // tri par date décroissante
-        this.appointments = [...data].sort((a,b) => (b.startTime?.localeCompare(a.startTime||'')||0));
-        this.applyFilters();
+    this.api.list(this.pageIndex, this.pageSize).subscribe({
+      next: (page: any) => {
+        // Spring Page => { content, totalElements, ... }
+        this.rows = page?.content ?? [];
+        this.total = page?.totalElements ?? this.rows.length;
         this.computeStats();
+        this.applyFilters();
         this.loading = false;
       },
       error: (err) => {
@@ -56,10 +78,10 @@ export class AppointmentListComponent implements OnInit {
   }
 
   computeStats() {
-    const t = this.appointments;
-    const count = (s?: AppointmentStatus) => t.filter(x => x.status === s).length;
+    const all = this.rows;
+    const count = (s: Status) => all.filter(a => a.status === s).length;
     this.stats = [
-      { label: 'Total', value: t.length },
+      { label: 'Total', value: all.length },
       { label: 'Confirmés', value: count('CONFIRMED') },
       { label: 'En attente', value: count('PENDING') },
       { label: 'Annulés', value: count('CANCELLED') },
@@ -67,27 +89,24 @@ export class AppointmentListComponent implements OnInit {
   }
 
   applyFilters() {
-    const q = this.q.trim().toLowerCase();
-    const fromTs = this.from ? new Date(this.from).getTime() : undefined;
-    const toTs = this.to ? new Date(this.to + 'T23:59:59').getTime() : undefined;
+    const q = (this.q || '').toLowerCase().trim();
+    const fromTs = this.from ? new Date(this.from + 'T00:00:00Z').getTime() : undefined;
+    const toTs   = this.to   ? new Date(this.to   + 'T23:59:59Z').getTime() : undefined;
 
-    this.filtered = this.appointments.filter(a => {
-      // recherche texte (reason)
-      const matchesQ = !q || (a.reason || '').toLowerCase().includes(q);
+    this.filtered = this.rows.filter(a => {
+      if (this.doctorId && a.doctorId !== +this.doctorId) return false;
+      if (this.patientId && a.patientId !== +this.patientId) return false;
+      if (this.status && a.status !== this.status) return false;
 
-      // doctor/patient
-      const matchesDoctor = !this.doctorId || a.doctorId === Number(this.doctorId);
-      const matchesPatient = !this.patientId || a.patientId === Number(this.patientId);
+      const st = new Date(a.startTime).getTime();
+      if (fromTs && st < fromTs) return false;
+      if (toTs && st > toTs) return false;
 
-      // statut
-      const matchesStatus = !this.status || a.status === this.status;
-
-      // période
-      const startMs = a.startTime ? new Date(a.startTime).getTime() : 0;
-      const matchesFrom = fromTs ? (startMs >= fromTs) : true;
-      const matchesTo = toTs ? (startMs <= toTs) : true;
-
-      return matchesQ && matchesDoctor && matchesPatient && matchesStatus && matchesFrom && matchesTo;
+      if (q) {
+        const hay = `${a.reason ?? ''} ${a.id} ${a.patientId} ${a.doctorId}`.toLowerCase();
+        if (!hay.includes(q)) return false;
+      }
+      return true;
     });
   }
 
@@ -101,28 +120,37 @@ export class AppointmentListComponent implements OnInit {
     this.applyFilters();
   }
 
-  toLocal(iso?: string) {
-    if (!iso) return '';
-    return new Date(iso).toLocaleString();
+  toLocal(iso: string) {
+    const d = new Date(iso);
+    // Affichage compact FR
+    return d.toLocaleString(undefined, {
+      year: '2-digit', month: '2-digit', day: '2-digit',
+      hour: '2-digit', minute: '2-digit'
+    });
   }
 
-  statusBadgeClass(s?: AppointmentStatus) {
+  statusBadgeClass(s: Status) {
     switch (s) {
       case 'CONFIRMED': return 'bg-success';
-      case 'PENDING': return 'bg-warning text-dark';
+      case 'PENDING':   return 'bg-secondary';
       case 'CANCELLED': return 'bg-danger';
-      case 'COMPLETED': return 'bg-secondary';
-      default: return 'bg-light text-dark';
+      case 'COMPLETED': return 'bg-primary';
+      default:          return 'bg-light text-dark';
     }
   }
 
-  quickAction(a: Appointment, action: 'CONFIRMED'|'CANCELLED'|'COMPLETED'|'DELETE') {
-    if (!a.id) return;
+  quickAction(a: Appointment, action: Status | 'DELETE') {
     if (action === 'DELETE') {
-      if (!confirm(`Supprimer rendez-vous #${a.id} ?`)) return;
-      this.api.delete(a.id).subscribe({ next: () => this.load() });
+      if (!confirm(`Supprimer le rendez-vous #${a.id} ?`)) return;
+      this.api.remove(a.id).subscribe({
+        next: () => this.load(),
+        error: (e) => { console.error(e); alert('Suppression échouée'); }
+      });
       return;
     }
-    this.api.changeStatus(a.id, action).subscribe({ next: () => this.load() });
+    this.api.changeStatus(a.id, action).subscribe({
+      next: () => this.load(),
+      error: (e) => { console.error(e); alert('Action échouée'); }
+    });
   }
 }

@@ -2,7 +2,7 @@
   <!-- Header -->
   <div class="d-flex align-items-center justify-content-between mb-3">
     <div>
-      <h2 class="mb-0 fw-bold">Rendez-vous</h2>
+      <h2 class="mb-0 fw-bold">Gestion des Rendez-vous</h2>
       <small class="text-muted">Gérez tous les rendez-vous de l’hôpital</small>
     </div>
     <div class="d-flex gap-2">
@@ -94,9 +94,7 @@
           <td>{{a.doctorId}}</td>
           <td>{{toLocal(a.startTime)}}</td>
           <td>{{toLocal(a.endTime)}}</td>
-          <td>
-            <span class="badge" [ngClass]="statusBadgeClass(a.status)">{{a.status}}</span>
-          </td>
+          <td><span class="badge" [ngClass]="statusBadgeClass(a.status)">{{a.status}}</span></td>
           <td class="text-end">
             <div class="btn-group btn-group-sm">
               <button class="btn btn-success" (click)="quickAction(a,'CONFIRMED')"><i class="bi bi-check2-circle"></i></button>

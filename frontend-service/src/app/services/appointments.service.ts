@@ -6,33 +6,29 @@ import { Appointment, AppointmentStatus } from '../models/appointment.model';
 
 @Injectable({ providedIn: 'root' })
 export class AppointmentsService {
-  private base = `${environment.apiGatewayUrl}/api/appointments`;
+  private base = `${environment.apiGatewayUrl}/appointments`;
 
   constructor(private http: HttpClient) {}
 
   ping(): Observable<string> {
     return this.http.get(`${this.base}/ping`, { responseType: 'text' });
   }
-
-  create(appt: Appointment): Observable<Appointment> {
-    return this.http.post<Appointment>(`${this.base}`, appt);
+  create(dto: any) {
+    return this.http.post(`${environment.apiGatewayUrl}/appointments`, dto);
+  }
+  list(page=0,size=20){
+    return this.http.get(`${environment.apiGatewayUrl}/appointments?page=${page}&size=${size}`);
+  }
+  get(id:number){
+    return this.http.get(`${environment.apiGatewayUrl}/appointments/${id}`);
+  }
+  update(id:number, dto:any){
+    return this.http.put(`${environment.apiGatewayUrl}/appointments/${id}`, dto);
+  }
+  remove(id:number){
+    return this.http.delete(`${environment.apiGatewayUrl}/appointments/${id}`);
   }
 
-  findAll(): Observable<Appointment[]> {
-    return this.http.get<Appointment[]>(`${this.base}`);
-  }
-
-  findById(id: number): Observable<Appointment> {
-    return this.http.get<Appointment>(`${this.base}/${id}`);
-  }
-
-  delete(id: number): Observable<void> {
-    return this.http.delete<void>(`${this.base}/${id}`);
-  }
-
-  update(id: number, partial: Partial<Appointment>): Observable<Appointment> {
-    return this.http.put<Appointment>(`${this.base}/${id}`, partial);
-  }
 
   changeStatus(id: number, status: AppointmentStatus): Observable<void> {
     const params = new HttpParams().set('status', status);
