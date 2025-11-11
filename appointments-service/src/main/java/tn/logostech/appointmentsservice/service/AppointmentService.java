@@ -18,4 +18,6 @@ public interface AppointmentService {
     Page<AppointmentResponse> byDoctorAndRange(Long doctorId, OffsetDateTime from, OffsetDateTime to, Pageable pageable);
 
     AppointmentResponse changeStatus(Long id, AppointmentStatus status);
+
+    Page<AppointmentResponse> list(Pageable pageable);
 }

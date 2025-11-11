@@ -116,4 +116,12 @@ public class AppointmentServiceImpl implements AppointmentService {
         r.setUpdatedAt(a.getUpdatedAt());
         return r;
     }
+
+    @Override
+    @Transactional(value = Transactional.TxType.SUPPORTS)
+    public Page<AppointmentResponse> list(Pageable pageable) {
+        return repo.findAll(pageable).map(this::toDto);
+    }
+
+
 }

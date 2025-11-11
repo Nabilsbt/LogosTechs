@@ -21,6 +21,12 @@ public class AppointmentController {
     @GetMapping("/ping")
     public String ping(){ return "pong"; }
 
+    @GetMapping
+    public Page<AppointmentResponse> list(Pageable pageable) {
+        return service.list(pageable);
+    }
+
+
     @PostMapping
     public AppointmentResponse create(@Valid @RequestBody CreateAppointmentRequest req){
         return service.create(req);
