@@ -1,0 +1,95 @@
+<div class="page">
+  <div class="d-flex align-items-center justify-content-between mb-3">
+    <div>
+      <h2 class="mb-0 fw-bold">Nouveau rendez-vous</h2>
+      <small class="text-muted">Crée un rendez-vous clair, avec dates précises</small>
+    </div>
+    <a class="btn btn-outline-secondary" routerLink="/appointments">
+      <i class="bi bi-arrow-left"></i> Retour à la liste
+    </a>
+  </div>
+
+  <div class="row g-3">
+    <!-- Form card -->
+    <div class="col-12 col-lg-7">
+      <div class="card form-card">
+        <div class="card-body">
+          <form [formGroup]="form" (ngSubmit)="submit()">
+            <div class="row g-3">
+              <div class="col-6">
+                <label class="form-label">Patient ID</label>
+                <input type="number" class="form-control" formControlName="patientId" placeholder="Ex: 1">
+                <div *ngIf="f.patientId.touched && f.patientId.invalid" class="invalid">Obligatoire (≥ 1)</div>
+              </div>
+              <div class="col-6">
+                <label class="form-label">Médecin ID</label>
+                <input type="number" class="form-control" formControlName="doctorId" placeholder="Ex: 101">
+                <div *ngIf="f.doctorId.touched && f.doctorId.invalid" class="invalid">Obligatoire (≥ 1)</div>
+              </div>
+
+              <div class="col-6">
+                <label class="form-label">Début (local)</label>
+                <input type="datetime-local" class="form-control" formControlName="startLocal">
+                <small class="text-muted">Sera converti automatiquement en UTC (ISO Z)</small>
+                <div *ngIf="f.startLocal.touched && f.startLocal.invalid" class="invalid">Date/heure requise</div>
+              </div>
+              <div class="col-6">
+                <label class="form-label">Fin (local)</label>
+                <input type="datetime-local" class="form-control" formControlName="endLocal">
+                <div *ngIf="f.endLocal.touched && f.endLocal.invalid" class="invalid">Date/heure requise</div>
+              </div>
+
+              <div class="col-12">
+                <label class="form-label">Motif</label>
+                <input type="text" class="form-control" formControlName="reason" placeholder="Consultation, contrôle…">
+              </div>
+
+              <div class="col-12 d-flex gap-2">
+                <button class="btn btn-primary" type="submit" [disabled]="submitting">
+                  <i class="bi bi-check2-circle me-1"></i> Créer
+                </button>
+                <a class="btn btn-outline-secondary" routerLink="/appointments">Annuler</a>
+              </div>
+
+              <div class="col-12" *ngIf="error">
+                <div class="alert alert-danger mb-0">{{error}}</div>
+              </div>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+
+    <!-- Preview / Aide -->
+    <div class="col-12 col-lg-5">
+      <div class="card preview-card">
+        <div class="card-body">
+          <div class="d-flex align-items-center justify-content-between mb-2">
+            <h5 class="mb-0">Aperçu</h5>
+            <span class="badge bg-info">Live</span>
+          </div>
+          <div class="preview-line"><span>Patient</span><strong>{{form.value.patientId}}</strong></div>
+          <div class="preview-line"><span>Médecin</span><strong>{{form.value.doctorId}}</strong></div>
+          <div class="preview-line">
+            <span>Période</span>
+            <strong>{{ preview() || '—' }}</strong>
+          </div>
+          <div class="preview-line"><span>Motif</span><strong>{{form.value.reason || '—'}}</strong></div>
+
+          <hr>
+          <ul class="small text-muted mb-0">
+            <li>Les heures sont envoyées au backend en UTC (format ISO avec “Z”).</li>
+            <li>Tu pourras modifier le statut après création (CONFIRMED / CANCELLED / COMPLETED).</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="card info-card mt-3">
+        <div class="card-body">
+          <h6 class="text-muted mb-2">Astuce</h6>
+          <p class="mb-0">Tu peux créer d’abord tous les RDV “<strong>Pending</strong>”, puis confirmer en masse depuis la liste.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

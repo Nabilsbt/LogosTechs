@@ -1,0 +1,116 @@
+<div class="page">
+  <!-- Header -->
+  <div class="d-flex align-items-center justify-content-between mb-3">
+    <div>
+      <h2 class="mb-0 fw-bold">Rendez-vous</h2>
+      <small class="text-muted">Gérez tous les rendez-vous de l’hôpital</small>
+    </div>
+    <div class="d-flex gap-2">
+      <a routerLink="/appointments/new" class="btn btn-primary">
+        <i class="bi bi-plus-lg me-1"></i> Nouveau
+      </a>
+      <button class="btn btn-outline-secondary" (click)="load()" [disabled]="loading">
+        <i class="bi bi-arrow-clockwise me-1"></i> Rafraîchir
+      </button>
+    </div>
+  </div>
+
+  <!-- Stats -->
+  <div class="row g-3 mb-3">
+    <div class="col-6 col-md-3" *ngFor="let s of stats">
+      <div class="card stat-card">
+        <div class="card-body">
+          <div class="label">{{s.label}}</div>
+          <div class="value">{{s.value}}</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Filtres -->
+  <div class="card mb-3">
+    <div class="card-body">
+      <div class="row g-2 align-items-end">
+        <div class="col-12 col-md-3">
+          <label class="form-label">Recherche (motif)</label>
+          <input class="form-control" [(ngModel)]="q" (ngModelChange)="applyFilters()" placeholder="Ex: contrôle, consultation…" />
+        </div>
+        <div class="col-6 col-md-2">
+          <label class="form-label">Médecin ID</label>
+          <input type="number" class="form-control" [(ngModel)]="doctorId" (ngModelChange)="applyFilters()"/>
+        </div>
+        <div class="col-6 col-md-2">
+          <label class="form-label">Patient ID</label>
+          <input type="number" class="form-control" [(ngModel)]="patientId" (ngModelChange)="applyFilters()"/>
+        </div>
+        <div class="col-6 col-md-2">
+          <label class="form-label">Statut</label>
+          <select class="form-select" [(ngModel)]="status" (ngModelChange)="applyFilters()">
+            <option [ngValue]="undefined">Tous</option>
+            <option value="PENDING">PENDING</option>
+            <option value="CONFIRMED">CONFIRMED</option>
+            <option value="CANCELLED">CANCELLED</option>
+            <option value="COMPLETED">COMPLETED</option>
+          </select>
+        </div>
+        <div class="col-6 col-md-1">
+          <label class="form-label">Du</label>
+          <input type="date" class="form-control" [(ngModel)]="from" (ngModelChange)="applyFilters()"/>
+        </div>
+        <div class="col-6 col-md-1">
+          <label class="form-label">Au</label>
+          <input type="date" class="form-control" [(ngModel)]="to" (ngModelChange)="applyFilters()"/>
+        </div>
+        <div class="col-12 col-md-1 d-grid">
+          <button class="btn btn-outline-dark" (click)="resetFilters()">Reset</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Erreurs / Loading -->
+  <div *ngIf="loading" class="alert alert-info"><i class="bi bi-hourglass-split me-1"></i> Chargement…</div>
+  <div *ngIf="error" class="alert alert-danger">{{error}}</div>
+
+  <!-- Tableau -->
+  <div class="card">
+    <div class="table-responsive">
+      <table class="table table-hover align-middle mb-0">
+        <thead class="table-light sticky-top">
+        <tr>
+          <th>#</th>
+          <th>Patient</th>
+          <th>Médecin</th>
+          <th>Début</th>
+          <th>Fin</th>
+          <th>Statut</th>
+          <th class="text-end">Actions</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr *ngFor="let a of filtered">
+          <td class="fw-semibold">#{{a.id}}</td>
+          <td>{{a.patientId}}</td>
+          <td>{{a.doctorId}}</td>
+          <td>{{toLocal(a.startTime)}}</td>
+          <td>{{toLocal(a.endTime)}}</td>
+          <td>
+            <span class="badge" [ngClass]="statusBadgeClass(a.status)">{{a.status}}</span>
+          </td>
+          <td class="text-end">
+            <div class="btn-group btn-group-sm">
+              <button class="btn btn-success" (click)="quickAction(a,'CONFIRMED')"><i class="bi bi-check2-circle"></i></button>
+              <button class="btn btn-warning" (click)="quickAction(a,'CANCELLED')"><i class="bi bi-x-octagon"></i></button>
+              <button class="btn btn-secondary" (click)="quickAction(a,'COMPLETED')"><i class="bi bi-flag"></i></button>
+              <button class="btn btn-danger" (click)="quickAction(a,'DELETE')"><i class="bi bi-trash"></i></button>
+            </div>
+          </td>
+        </tr>
+        <tr *ngIf="!filtered.length && !loading">
+          <td colspan="7" class="text-center text-muted py-4">Aucun rendez-vous</td>
+        </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
