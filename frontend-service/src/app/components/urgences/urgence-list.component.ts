@@ -1,17 +1,8 @@
 import { Component, OnInit } from '@angular/core';
 import { Urgence, Priority, UrgenceStatus, CreateUrgenceRequest } from '../../models/urgence.model';
 import { UrgenceService } from '../../services/urgence.service';
-import { UserExpressService } from '../../services/user-express.service';
-import { KeycloakUser } from '../../models/user-express.model';
-
-// Interface locale pour les réponses API
-interface ApiResponse<T> {
-  success: boolean;
-  data?: T;
-  error?: string;
-  message?: string;
-  count?: number;
-}
+import { UserService } from '../../services/user.service';
+import { User, UserRole } from '../../models/user.model';
 
 @Component({
   selector: 'app-urgence-list',
@@ -21,7 +12,7 @@ interface ApiResponse<T> {
 export class UrgenceListComponent implements OnInit {
   urgences: Urgence[] = [];
   filteredUrgences: Urgence[] = [];
-  doctors: KeycloakUser[] = [];
+  doctors: User[] = [];
   loading = false;
   error: string | null = null;
   
@@ -62,7 +53,7 @@ export class UrgenceListComponent implements OnInit {
 
   constructor(
     private urgenceService: UrgenceService,
-    private userExpressService: UserExpressService
+    private userService: UserService
   ) {}
 
   ngOnInit(): void {
@@ -75,7 +66,7 @@ export class UrgenceListComponent implements OnInit {
     this.error = null;
     
     this.urgenceService.getAllUrgences().subscribe({
-      next: (response: ApiResponse<Urgence[]>) => {
+      next: (response) => {
         if (response.success && response.data) {
           this.urgences = response.data;
           this.applyFilters();
@@ -84,7 +75,7 @@ export class UrgenceListComponent implements OnInit {
         }
         this.loading = false;
       },
-      error: (error: any) => {
+      error: (error) => {
         this.error = 'Erreur de connexion au service urgences';
         this.loading = false;
         console.error('Error loading urgences:', error);
@@ -93,16 +84,13 @@ export class UrgenceListComponent implements OnInit {
   }
 
   loadDoctors(): void {
-    // Charger tous les utilisateurs et filtrer ceux qui ont le rôle "doctor"
-    this.userExpressService.getAllUsers().subscribe({
-      next: (users: KeycloakUser[]) => {
-        this.doctors = users.filter(user => 
-          user.enabled && 
-          user.realmRoles && 
-          user.realmRoles.includes('doctor')
-        );
+    this.userService.getUsersByRole(UserRole.DOCTOR).subscribe({
+      next: (response) => {
+        if (response.success && response.data) {
+          this.doctors = response.data.filter(doctor => doctor.active);
+        }
       },
-      error: (error: any) => {
+      error: (error) => {
         console.error('Error loading doctors:', error);
       }
     });
@@ -170,7 +158,7 @@ export class UrgenceListComponent implements OnInit {
 
     this.loading = true;
     this.urgenceService.createUrgence(this.newUrgence).subscribe({
-      next: (response: ApiResponse<Urgence>) => {
+      next: (response) => {
         if (response.success) {
           this.loadUrgences();
           this.closeCreateModal();
@@ -179,7 +167,7 @@ export class UrgenceListComponent implements OnInit {
         }
         this.loading = false;
       },
-      error: (error: any) => {
+      error: (error) => {
         this.error = 'Erreur lors de la création de l\'urgence';
         this.loading = false;
         console.error('Error creating urgence:', error);
@@ -206,7 +194,7 @@ export class UrgenceListComponent implements OnInit {
 
     this.loading = true;
     this.urgenceService.triageUrgence(this.selectedUrgence.id!, this.triageData).subscribe({
-      next: (response: ApiResponse<Urgence>) => {
+      next: (response) => {
         if (response.success) {
           this.loadUrgences();
           this.closeTriageModal();
@@ -215,7 +203,7 @@ export class UrgenceListComponent implements OnInit {
         }
         this.loading = false;
       },
-      error: (error: any) => {
+      error: (error) => {
         this.error = 'Erreur lors du triage';
         this.loading = false;
         console.error('Error performing triage:', error);
@@ -241,7 +229,7 @@ export class UrgenceListComponent implements OnInit {
 
     this.loading = true;
     this.urgenceService.startTreatment(this.selectedUrgence.id!, this.treatmentData).subscribe({
-      next: (response: ApiResponse<Urgence>) => {
+      next: (response) => {
         if (response.success) {
           this.loadUrgences();
           this.closeTreatmentModal();
@@ -250,7 +238,7 @@ export class UrgenceListComponent implements OnInit {
         }
         this.loading = false;
       },
-      error: (error: any) => {
+      error: (error) => {
         this.error = 'Erreur lors du démarrage du traitement';
         this.loading = false;
         console.error('Error starting treatment:', error);
@@ -264,14 +252,14 @@ export class UrgenceListComponent implements OnInit {
     }
 
     this.urgenceService.dischargePatient(urgence.id!).subscribe({
-      next: (response: ApiResponse<Urgence>) => {
+      next: (response) => {
         if (response.success) {
           this.loadUrgences();
         } else {
           this.error = response.error || 'Erreur lors de la sortie du patient';
         }
       },
-      error: (error: any) => {
+      error: (error) => {
         this.error = 'Erreur lors de la sortie du patient';
         console.error('Error discharging patient:', error);
       }
@@ -284,14 +272,14 @@ export class UrgenceListComponent implements OnInit {
     }
 
     this.urgenceService.deleteUrgence(urgence.id!).subscribe({
-      next: (response: ApiResponse<void>) => {
+      next: (response) => {
         if (response.success) {
           this.loadUrgences();
         } else {
           this.error = response.error || 'Erreur lors de la suppression de l\'urgence';
         }
       },
-      error: (error: any) => {
+      error: (error) => {
         this.error = 'Erreur lors de la suppression de l\'urgence';
         console.error('Error deleting urgence:', error);
       }
@@ -315,7 +303,7 @@ export class UrgenceListComponent implements OnInit {
   }
 
   getDoctorName(doctorId: number): string {
-    const doctor = this.doctors.find(d => d.id === doctorId.toString());
+    const doctor = this.doctors.find(d => d.id === doctorId);
     return doctor ? `${doctor.firstName} ${doctor.lastName}` : 'Non assigné';
   }
 

@@ -2,7 +2,7 @@ import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
 
 // Composants Users & Urgences (Nabil)
-import { UserExpressListComponent } from './components/users/user-express-list.component';
+import { UserListComponent } from './components/users/user-list.component';
 import { UrgenceListComponent } from './components/urgences/urgence-list.component';
 
 // Composants Events (Aziz)
@@ -25,7 +25,7 @@ const routes: Routes = [
   { path: '', redirectTo: '/urgences', pathMatch: 'full' },
   
   // Routes Users & Urgences (Nabil)
-  { path: 'users', component: UserExpressListComponent },
+  { path: 'users', component: UserListComponent },
   { path: 'urgences', component: UrgenceListComponent },
   
   // Routes Events (Aziz)

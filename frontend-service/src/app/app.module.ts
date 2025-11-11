@@ -1,17 +1,15 @@
 import { NgModule } from '@angular/core';
 import { BrowserModule } from '@angular/platform-browser';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
-import { HttpClientModule, HTTP_INTERCEPTORS } from '@angular/common/http';
+import { HttpClientModule } from '@angular/common/http';
 import { CommonModule, DatePipe, TitleCasePipe } from '@angular/common';
-
-// Keycloak
-import { AuthInterceptor } from './interceptors/auth.interceptor';
+import { RouterModule } from '@angular/router';
 
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
 
 // Composants Users & Urgences (Nabil)
-import { UserExpressListComponent } from './components/users/user-express-list.component';
+import { UserListComponent } from './components/users/user-list.component';
 import { UrgenceListComponent } from './components/urgences/urgence-list.component';
 
 // Composants Events (Aziz)
@@ -34,7 +32,7 @@ import { PharmaciesComponent } from './components/pharmacies/pharmacies.componen
   declarations: [
     AppComponent,
     // Composants Users & Urgences (Nabil)
-    UserExpressListComponent,
+    UserListComponent,
     UrgenceListComponent,
     // Composants Events (Aziz)
     EventListComponent,
@@ -59,12 +57,7 @@ import { PharmaciesComponent } from './components/pharmacies/pharmacies.componen
   ],
   providers: [
     DatePipe,
-    TitleCasePipe,
-    {
-      provide: HTTP_INTERCEPTORS,
-      useClass: AuthInterceptor,
-      multi: true
-    }
+    TitleCasePipe
   ],
   bootstrap: [AppComponent]
 })

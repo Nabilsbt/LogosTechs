@@ -2,16 +2,8 @@ import { Injectable } from '@angular/core';
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { Urgence, Priority, UrgenceStatus, CreateUrgenceRequest, UpdateUrgenceRequest, TriageRequest, TreatmentRequest } from '../models/urgence.model';
+import { ApiResponse } from '../models/common.model';
 import { environment } from '../../environments/environment';
-
-// Interface pour les réponses API
-interface ApiResponse<T> {
-  success: boolean;
-  data?: T;
-  error?: string;
-  message?: string;
-  count?: number;
-}
 
 @Injectable({
   providedIn: 'root'
