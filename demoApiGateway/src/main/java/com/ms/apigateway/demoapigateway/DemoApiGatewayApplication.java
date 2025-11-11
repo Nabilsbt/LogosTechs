@@ -24,12 +24,21 @@ public class DemoApiGatewayApplication {
 						.uri("lb://demoCandidat5SE2"))
 				.route("routejob",r->r.path("/jobs/**")
 						.uri("lb://MS-job-s"))
-				.route("appointments-route", r -> r
-						.path("/appointments/**")
-						.filters(f -> f.rewritePath("/appointments/(?<segment>.*)",
-								"/api/appointments/${segment}"))
-						.uri("lb://APPOINTMENTS-SERVICE"))
+
+				.route("appointments-root", r -> r
+						.path("/appointments") // EXACTEMENT /appointments
+						.filters(f -> f.rewritePath("/appointments", "/api/appointments"))
+						.uri("lb://APPOINTMENTS-SERVICE")
+				)
+				.route("appointments-with-segment", r -> r
+						.path("/appointments/**") // /appointments/...
+						.filters(f -> f.rewritePath("/appointments/(?<segment>.*)", "/api/appointments/${segment}"))
+						.uri("lb://APPOINTMENTS-SERVICE")
+				)
+
 				.build();
+
+
 
 
 	}
